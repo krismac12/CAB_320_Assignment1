@@ -108,6 +108,7 @@ class SokobanPuzzle(search.Problem):
 
         #raise NotImplementedError()
 
+#--------------------------------------------------------------------------------------------------------------------------   
 
     def actions(self, state):
         """
@@ -119,24 +120,47 @@ class SokobanPuzzle(search.Problem):
         right = True
         down = True
         worker = list(state.worker)
-        worker_Up = [worker[0],worker[1] - 1]
-        worker_Left = [worker[0] - 1,worker[1]]
-        worker_Right = [worker[0] + 1,worker[1]]
-        worker_Down = [worker[0],worker[1] + 1]
+        worker_up = [worker[0],worker[1] - 1]
+        worker_left = [worker[0] - 1,worker[1]]
+        worker_right = [worker[0] + 1,worker[1]]
+        worker_down = [worker[0],worker[1] + 1]
 
-        for wall in state.walls:
-            if worker_Up == list(wall):
-                up = False
-            if worker_Left == list(wall):
-                left = False
-            if worker_Right == list(wall):
-                right = False
-            if worker_Down == list(wall):
-                down = False
-        
+        worker_up2 = [worker[0],worker[1] - 2]
+        worker_left2 = [worker[0] - 2,worker[1]]
+        worker_right2 = [worker[0] + 2,worker[1]]
+        worker_down2 = [worker[0],worker[1] + 2]
+
+        if self.box_or_wall(worker_up,state)[1] or (self.box_or_wall(worker_up,state)[0] and (self.box_or_wall(worker_up2,state)[0] or self.box_or_wall(worker_up2,state)[1])):
+            up = False
+        if self.box_or_wall(worker_left,state)[1] or (self.box_or_wall(worker_left,state)[0] and (self.box_or_wall(worker_left2,state)[0] or self.box_or_wall(worker_left2,state)[1])):
+            left = False
+        if self.box_or_wall(worker_right,state)[1] or (self.box_or_wall(worker_right,state)[0] and (self.box_or_wall(worker_right2,state)[0] or self.box_or_wall(worker_right2,state)[1])):
+            right = False
+        if self.box_or_wall(worker_down,state)[1] or (self.box_or_wall(worker_down,state)[0] and (self.box_or_wall(worker_down2,state)[0] or self.box_or_wall(worker_down2,state)[1])):
+            down = False
+
         return[up,down,left,right]
         raise NotImplementedError
+    
+#--------------------------------------------------------------------------------------------------------------------------   
+ 
+    def box_or_wall(self,position,state):
+        """
+        Returns a tuple that contains wether the position is a box or a wall
 
+        """
+        is_box = False
+        is_wall = False
+        for wall in state.walls:
+            if position == list(wall):
+                is_wall = True
+        
+        for box in state.boxes:
+            if position == list(box):
+                is_box = True
+        tup = [is_box,is_wall]
+        return tup
+    
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 def check_elem_action_seq(warehouse, action_seq):
