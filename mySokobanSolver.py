@@ -43,7 +43,7 @@ def my_team():
     
     '''
 #    return [ (1234567, 'Ada', 'Lovelace'), (1234568, 'Grace', 'Hopper'), (1234569, 'Eva', 'Tardos') ]
-    raise NotImplementedError()
+    #raise NotImplementedError()
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -74,7 +74,7 @@ def taboo_cells(warehouse):
        and the boxes.  
     '''
     ##         "INSERT YOUR CODE HERE"    
-    raise NotImplementedError()
+    #raise NotImplementedError()
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -103,13 +103,38 @@ class SokobanPuzzle(search.Problem):
 
     
     def __init__(self, warehouse):
-        raise NotImplementedError()
+
+        self.initial = warehouse.copy()
+
+        #raise NotImplementedError()
+
 
     def actions(self, state):
         """
         Return the list of actions that can be executed in the given state.
         
         """
+        up = True
+        left = True
+        right = True
+        down = True
+        worker = list(state.worker)
+        worker_Up = [worker[0],worker[1] - 1]
+        worker_Left = [worker[0] - 1,worker[1]]
+        worker_Right = [worker[0] + 1,worker[1]]
+        worker_Down = [worker[0],worker[1] + 1]
+
+        for wall in state.walls:
+            if worker_Up == list(wall):
+                up = False
+            if worker_Left == list(wall):
+                left = False
+            if worker_Right == list(wall):
+                right = False
+            if worker_Down == list(wall):
+                down = False
+        
+        return[up,down,left,right]
         raise NotImplementedError
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -140,7 +165,7 @@ def check_elem_action_seq(warehouse, action_seq):
     
     ##         "INSERT YOUR CODE HERE"
     
-    raise NotImplementedError()
+    #raise NotImplementedError()
 
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -169,7 +194,7 @@ def solve_weighted_sokoban(warehouse):
 
     '''
     
-    raise NotImplementedError()
+    #raise NotImplementedError()
 
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
