@@ -73,7 +73,259 @@ def taboo_cells(warehouse):
        The returned string should NOT have marks for the worker, the targets,
        and the boxes.  
     '''
-    ##         "INSERT YOUR CODE HERE"    
+    taboo_cell =""
+    #List to store cell for rule 2
+    taboo_corner_cell =[]
+    #list to store cells for rule 2
+    other_taboo =[]
+    #kist to store targert cells
+    target_list =[]
+    
+    cells = str(warehouse).split('\n')
+    count = 0
+    for x in cells:
+        cells[count] = list(x)
+        count+=1
+    # Codes for rule rule 1 
+    # Copy cells into temp by splitting everything    
+    temp = cells[:]
+    for indx, row in enumerate(cells):
+        inside_cell = False
+        for cent_indx, char in enumerate(row):
+            # turn the goal into a legit spot
+            if char == "." or char == '$' or char == '*':
+                cells[indx][cent_indx] = " " 
+                inside_cell = True
+                
+            if char == "." or char == "*":
+                target_list.append((indx, cent_indx))
+            #If a wall is encountered, check if it is within the playing area    
+            elif char == '#':
+                inside_cell = True
+                for index in range(cent_indx):
+                    if cells[indx][count] == '#':
+                        inside_cell = False
+                cells[indx][cent_indx] = char
+                
+            else:
+                # Check if the space is within the cell and if it's in the corner of the warehouse
+                if inside_cell == False or indx == 0 or indx == len(cells) - 1 or cent_indx == 0 or cent_indx == len(cells[indx]) - 1:
+                    cells[indx][cent_indx] = char
+                else:
+                    
+                    taboo1 = temp[indx][cent_indx - 1] == '#' and temp[indx - 1][cent_indx] == '#' # Checks left top
+                    taboo2 = temp[indx][cent_indx + 1] == '#' and temp[indx - 1][cent_indx] == '#' # Checks right top
+                    taboo3 = temp[indx][cent_indx - 1] == '#' and temp[indx + 1][cent_indx] == '#' # Checks left bottom
+                    taboo4 = temp[indx][cent_indx + 1] == '#' and temp[indx + 1][cent_indx] == '#' # Checks right bottom
+                    
+                    if taboo1 or taboo2 or taboo3 or taboo4:
+                        cells[indx][cent_indx] = 'X'
+                        taboo_corner_cell.append((indx, cent_indx))
+                    else:
+                        cells[indx][cent_indx] = ' '
+    
+    # Codes to get cells for Rule 2
+    taboo_x_y = []
+    is_taboo = False
+    
+    for x in taboo_corner_cell:
+        # if a corner taboo cell is in a Top Left Corner
+        if cells[x[0]][x[1] - 1] == '#' and cells[x[0] - 1][x[1]] == '#':
+            
+            y = x[0] + 1
+            # get the all the cells below the corner taboo cell untill a wall is encountered
+            while cells[y][x[1]] != '#':
+                taboo_x_y.append((y, x[1]))
+                y = y + 1
+            
+            if len(taboo_x_y) > 0:
+                # Check all the cells are in between two corners
+                if taboo_x_y[-1] in taboo_corner_cell:
+                    is_taboo = True
+                    for z in taboo_x_y:
+                        # Check the left side of all the cells, if one is not a wall,
+                        # then all cells are not taboo cells
+                        if cells[z[0]][z[1]- 1 ] != '#':
+                            is_taboo = False
+                        
+                        # Check if any of the cells is a target, if it is a target.
+                        # then all cells are not taboo cells
+                        if z in target_list:
+                            is_taboo = False
+            if is_taboo:
+                other_taboo.extend(taboo_x_y)
+                is_taboo=False
+                
+            taboo_x_y =[]
+            
+            # Check and get the all the cells to the right the corner taboo cell untill a wall is encountered# Check and get the all the cells to the right the corner taboo cell untill a wall is encountered
+            count = x[1] +1
+            while cells[x[0][count]] != '#':
+                taboo_x_y.append((x[0], count))
+                x = x+1
+                
+            if len(taboo_x_y)>0:
+                # Check all the cells are in between two corners
+                if (taboo_x_y[-1]) in taboo_corner_cell:
+                    is_taboo = True
+                    for z in taboo_x_y:
+        # Check the top side of all the cells, if one of is not a wall,
+                     # then all cells are not taboo cells
+                        if cells[x[0]-1][z[1]] != '#':
+                            is_taboo = False
+                        if z in target_list:
+                            is_taboo
+                        
+            if is_taboo:
+                other_taboo.extend(taboo_x_y)
+                is_taboo=False
+                
+            taboo_x_y =[]
+            
+        #the code is similar to the section above expect looking in the Top Right Corner  
+        if cells[x[0]][x[1] + 1] == '#' and cells[x[0] - 1][x[1]] == '#':
+            
+            y = x[0] + 1
+            
+            while cells[y][x[1]] != '#':
+                taboo_x_y.append((y, x[1]))
+                y = y + 1
+            
+            if len(taboo_x_y) > 0:
+                if taboo_x_y[-1] in taboo_corner_cell:
+                    is_taboo = True
+                    for y in taboo_x_y:
+                        if cells[z[0]][y[1]+ 1 ] != '#':
+                            is_taboo = False
+                        
+                        if y in target_list:
+                            is_taboo = False
+            if is_taboo:
+                other_taboo.extend(taboo_x_y)
+                is_taboo=False
+                
+            taboo_x_y =[]
+            
+            count = x[1] -1
+            while cells[x[0][count]] != '#':
+                taboo_x_y.append((x[0], count))
+                x = x-1
+                
+            if len(taboo_x_y) >0:
+                if len(taboo_x_y[-1]) in taboo_corner_cell:
+                    is_taboo = True
+                    for y in taboo_x_y:
+                        if cells[x[0]-1][y[1]] != '#':
+                            is_taboo = False
+                        if y in target_list:
+                            is_taboo = False
+                        
+            if is_taboo:
+                other_taboo.extend(taboo_x_y)
+                is_taboo=False
+                
+            taboo_x_y =[]
+        
+        #the code is similar to the section above expect looking in the Bottom Left Corner
+        if cells[x[0]][x[1] -1] == '#' and cells[x[0] +1][x[1]] == '#':
+            
+            y = x[0] - 1
+            
+            while cells[y][x[1]] != '#':
+                taboo_x_y.append((y, x[1]))
+                y = y - 1
+            
+            if len(taboo_x_y) > 0:
+                
+                if taboo_x_y[-1] in taboo_corner_cell:
+                    is_taboo = True
+                    for z in taboo_x_y:
+                        
+                        if cells[z[0]][z[1]- 1 ] != '#':
+                            is_taboo = False
+                        
+                        if z in target_list:
+                            is_taboo = False
+            if is_taboo:
+                other_taboo.extend(taboo_x_y)
+                is_taboo=False
+                
+            taboo_x_y =[]
+            
+            count = x[1] +1
+            while cells[x[0][count]] != '#':
+                taboo_x_y.append((x[0], count))
+                x = x+1
+                
+            if len(taboo_x_y) >0:
+                if len(taboo_x_y[-1]) in taboo_corner_cell:
+                    is_taboo = True
+                    for y in taboo_x_y:
+                        if cells[x[0]+1][y[1]] != '#':
+                            is_taboo = False
+                        if z in target_list:
+                            is_taboo = False
+                        
+            if is_taboo:
+                other_taboo.extend(taboo_x_y)
+                is_taboo=False
+                
+            taboo_x_y =[]
+        #the code is similar to the section above expect looking in the Bottom Right Corner
+        if cells[x[0]][x[1] +1] == '#' and cells[x[0] +1][x[1]] == '#':
+            
+            y = x[0] - 1
+            
+            while cells[y][x[1]] != '#':
+                taboo_x_y.append((y, x[1]))
+                y = y - 1
+            
+            if len(taboo_x_y) > 0:
+                
+                if taboo_x_y[-1] in taboo_corner_cell:
+                    is_taboo = True
+                    for z in taboo_x_y:
+                        
+                        if cells[z[0]][z[1]+ 1 ] != '#':
+                            is_taboo = False
+                        
+                        if z in target_list:
+                            is_taboo = False
+            if is_taboo:
+                other_taboo.extend(taboo_x_y)
+                is_taboo=False
+                
+            taboo_x_y =[]
+            
+            count = x[1] -1
+            while cells[x[0][count]] != '#':
+                taboo_x_y.append((x[0], count))
+                x = x-1
+                
+            if len(taboo_x_y) >0:
+                if len(taboo_x_y[-1]) in taboo_corner_cell:
+                    is_taboo = True
+                    for y in taboo_x_y:
+                        if cells[x[0]+1][y[1]] != '#':
+                            is_taboo = False
+                        if y in target_list:
+                            is_taboo = False
+                        
+            if is_taboo:
+                other_taboo.extend(taboo_x_y)
+                is_taboo=False
+            taboo_x_y =[]
+            
+    for x in other_taboo:
+        cells[x[0]][x[1]] = "X"
+        
+    cells = cells[1:]
+    
+    for row in cells:
+        taboo_cell += "\n"
+        taboo_cell += ''.join(row)
+        
+    return taboo_cell  
     #raise NotImplementedError()
 #--------------------------------------------------------------------------------------------------------------------------   
  
