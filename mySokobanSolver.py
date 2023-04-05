@@ -74,18 +74,18 @@ def taboo_cells(warehouse):
        and the boxes.  
     '''
     taboo_cell =""
-    #List to store cell for rule 2
+    #List to store cell for rule 1
     taboo_corner_cell =[]
     #list to store cells for rule 2
     other_taboo =[]
-    #kist to store targert cells
+    #list to store targert cells
     target_list =[]
     
     cells = str(warehouse).split('\n')
-    count = 0
+    x_1 = 0
     for x in cells:
-        cells[count] = list(x)
-        count+=1
+        cells[x_1] = list(x)
+        x_1 +=1
     # Codes for rule rule 1 
     # Copy cells into temp by splitting everything    
     temp = cells[:]
@@ -103,7 +103,7 @@ def taboo_cells(warehouse):
             elif char == '#':
                 inside_cell = True
                 for index in range(cent_indx):
-                    if cells[indx][count] == '#':
+                    if cells[indx][index] == '#':
                         inside_cell = False
                 cells[indx][cent_indx] = char
                 
@@ -160,9 +160,9 @@ def taboo_cells(warehouse):
             
             # Check and get the all the cells to the right the corner taboo cell untill a wall is encountered# Check and get the all the cells to the right the corner taboo cell untill a wall is encountered
             count = x[1] +1
-            while cells[x[0][count]] != '#':
+            while cells[x[0]][count] != '#':
                 taboo_x_y.append((x[0], count))
-                x = x+1
+                count = count+1
                 
             if len(taboo_x_y)>0:
                 # Check all the cells are in between two corners
@@ -207,9 +207,9 @@ def taboo_cells(warehouse):
             taboo_x_y =[]
             
             count = x[1] -1
-            while cells[x[0][count]] != '#':
+            while cells[x[0]][count] != '#':
                 taboo_x_y.append((x[0], count))
-                x = x-1
+                count = count-1
                 
             if len(taboo_x_y) >0:
                 if len(taboo_x_y[-1]) in taboo_corner_cell:
@@ -253,9 +253,9 @@ def taboo_cells(warehouse):
             taboo_x_y =[]
             
             count = x[1] +1
-            while cells[x[0][count]] != '#':
+            while cells[x[0]][count] != '#':
                 taboo_x_y.append((x[0], count))
-                x = x+1
+                count = count+1
                 
             if len(taboo_x_y) >0:
                 if len(taboo_x_y[-1]) in taboo_corner_cell:
@@ -298,9 +298,9 @@ def taboo_cells(warehouse):
             taboo_x_y =[]
             
             count = x[1] -1
-            while cells[x[0][count]] != '#':
+            while cells[x[0]][count] != '#':
                 taboo_x_y.append((x[0], count))
-                x = x-1
+                count = count-1
                 
             if len(taboo_x_y) >0:
                 if len(taboo_x_y[-1]) in taboo_corner_cell:
@@ -319,12 +319,17 @@ def taboo_cells(warehouse):
     for x in other_taboo:
         cells[x[0]][x[1]] = "X"
         
-    cells = cells[1:]
+    cells = cells[:]
     
+    counter = 0
     for row in cells:
-        taboo_cell += "\n"
         taboo_cell += ''.join(row)
         
+        if counter <len(cells) -1: 
+            taboo_cell += "\n"
+           
+        counter = counter+ 1
+    
     return taboo_cell  
     #raise NotImplementedError()
 #--------------------------------------------------------------------------------------------------------------------------   
