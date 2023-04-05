@@ -483,3 +483,16 @@ def solve_weighted_sokoban(warehouse):
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+def remove_taboo_state(state):
+    """
+    Removes the states where a box is in a taboo_cell
+        
+    """
+    return None
+
+def remove_duplicate_state(duplicate_1,duplicate_2):
+    """
+    Compares multiple states with the same layout and removes the state that has a longer path
+        
+    """
+    return None
