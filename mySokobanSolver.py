@@ -347,8 +347,6 @@ def box_or_wall(position,state):
     
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
 
 class SokobanPuzzle(search.Problem):
     '''
@@ -386,21 +384,31 @@ class SokobanPuzzle(search.Problem):
         Return the list of actions that can be executed in the given state.
         
         """
+
+        #Defines the actions of the state as true at the beginning
         up = True
         left = True
         right = True
         down = True
+
+        #Defines the position of the worker
         worker = list(state.worker)
+
+        #Defines the positions next to the worker
         worker_up = [worker[0],worker[1] - 1]
         worker_left = [worker[0] - 1,worker[1]]
         worker_right = [worker[0] + 1,worker[1]]
         worker_down = [worker[0],worker[1] + 1]
 
+        #Defines the positions two steps away from the worker
         worker_up2 = [worker[0],worker[1] - 2]
         worker_left2 = [worker[0] - 2,worker[1]]
         worker_right2 = [worker[0] + 2,worker[1]]
         worker_down2 = [worker[0],worker[1] + 2]
-        
+
+
+        #Checks the position next to the worker is a wall if the position is a wall that direction is false
+        #Checks whether a box next to the worker can be pushed by checking the position next to the box is either a wall or a box
         if box_or_wall(worker_up,state)[1] or (box_or_wall(worker_up,state)[0] and (box_or_wall(worker_up2,state)[0] or box_or_wall(worker_up2,state)[1])):
             up = False
         if box_or_wall(worker_left,state)[1] or (box_or_wall(worker_left,state)[0] and (box_or_wall(worker_left2,state)[0] or box_or_wall(worker_left2,state)[1])):
@@ -410,6 +418,7 @@ class SokobanPuzzle(search.Problem):
         if box_or_wall(worker_down,state)[1] or (box_or_wall(worker_down,state)[0] and (box_or_wall(worker_down2,state)[0] or box_or_wall(worker_down2,state)[1])):
             down = False
 
+        #returns a boolean for each position in a list representing whether that direction is a valid input
         return[up,down,left,right]
         raise NotImplementedError
     
