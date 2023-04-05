@@ -449,7 +449,30 @@ def check_elem_action_seq(warehouse, action_seq):
     
     ##         "INSERT YOUR CODE HERE"
     
-    #raise NotImplementedError()
+    #return string if move is impossible
+    impossible_seq = 'Impossible'
+
+    worker_x, worker_y = warehouse.worker
+
+    for action in action_seq:
+        if action == 'Up':
+            ###print('up')
+            #next move after up
+            next_x = worker_x
+            next_y = worker_y - 1
+            if (next_x, next_y) in warehouse.walls:
+                return impossible_seq
+            elif (next_x, next_y) in warehouse.boxes:
+                if (next_x, next_y - 1) not in warehouse.walls and (next_x, next_y) in warehouse.boxes:
+                    warehouse.boxes.remove((next_x, next_y))
+                    warehouse.boxes.append((next_x, next_y - 1))
+                    worker_y = next_y
+            else:
+                return impossible_seq 
+        else:
+            worker_y = next_y 
+    ###elif action == "Down":
+
 
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
