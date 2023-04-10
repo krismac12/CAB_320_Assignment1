@@ -510,6 +510,56 @@ def solve_weighted_sokoban(warehouse):
 
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+def move_worker(state,action):
+    worker = list(state.worker)
+
+    #Defines the positions next to the worker
+    worker_up = [worker[0],worker[1] - 1]
+    worker_left = [worker[0] - 1,worker[1]]
+    worker_right = [worker[0] + 1,worker[1]]
+    worker_down = [worker[0],worker[1] + 1]
+
+    #Defines the positions two steps away from the worker
+    worker_up2 = [worker[0],worker[1] - 2]
+    worker_left2 = [worker[0] - 2,worker[1]]
+    worker_right2 = [worker[0] + 2,worker[1]]
+    worker_down2 = [worker[0],worker[1] + 2]
+
+    if action == "Left":
+        if box_or_wall(worker_left,state)[0]:
+            index = state.boxes.index((worker_left[0],worker_left[1]))
+            state.boxes[index] = worker_left2
+
+
+        state.worker = worker_left
+
+    if action == "Right":
+        if box_or_wall(worker_right,state)[0]:
+            index = state.boxes.index((worker_right[0],worker_right[1]))
+            state.boxes[index] = worker_right2
+
+
+        state.worker = worker_right
+
+    if action == "Up":
+        if box_or_wall(worker_up,state)[0]:
+            index = state.boxes.index((worker_up[0],worker_up[1]))
+            state.boxes[index] = worker_up2
+
+
+        state.worker = worker_up
+    
+    if action == "Down":
+        if box_or_wall(worker_down,state)[0]:
+            index = state.boxes.index((worker_down[0],worker_down[1]))
+            state.boxes[index] = worker_down2
+
+
+        state.worker = worker_down
+        
+    return None
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 def remove_taboo_state(state):
     """
@@ -524,3 +574,4 @@ def remove_duplicate_state(duplicate_1,duplicate_2):
         
     """
     return None
+
