@@ -532,7 +532,7 @@ def move_worker(state,action):
 
 
     if action == "Left":
-        #Moves Box along with player if box is in the way
+        #Moves Box along with worker if box is in the way
         if box_or_wall(worker_left,state)[0]:
             index = state.boxes.index((worker_left[0],worker_left[1]))
             state.boxes[index] = worker_left2
@@ -540,7 +540,7 @@ def move_worker(state,action):
         state.worker = worker_left
 
     if action == "Right":
-        #Moves Box along with player if box is in the way
+        #Moves Box along with worker if box is in the way
         if box_or_wall(worker_right,state)[0]:
             index = state.boxes.index((worker_right[0],worker_right[1]))
             state.boxes[index] = worker_right2
@@ -548,7 +548,7 @@ def move_worker(state,action):
         state.worker = worker_right
 
     if action == "Up":
-        #Moves Box along with player if box is in the way
+        #Moves Box along with worker if box is in the way
         if box_or_wall(worker_up,state)[0]:
             index = state.boxes.index((worker_up[0],worker_up[1]))
             state.boxes[index] = worker_up2
@@ -556,7 +556,7 @@ def move_worker(state,action):
         state.worker = worker_up
     
     if action == "Down":
-        #Moves Box along with player if box is in the way
+        #Moves Box along with worker if box is in the way
         if box_or_wall(worker_down,state)[0]:
             index = state.boxes.index((worker_down[0],worker_down[1]))
             state.boxes[index] = worker_down2
