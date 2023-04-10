@@ -2,19 +2,18 @@ import  mySokobanSolver
 import sokoban
 
 warehouse = sokoban.Warehouse()
-warehouse.load_warehouse("warehouses\warehouse_71.txt")
+warehouse.load_warehouse("warehouses\warehouse_01.txt")
 
 solver = mySokobanSolver.SokobanPuzzle(warehouse)
 
 
+print("initial")
 print(warehouse)
-mySokobanSolver.move_worker(warehouse,"Left")
-mySokobanSolver.move_worker(warehouse,"Up")
+for warehouse in solver.unexpanded_states:
+    print("new")
+    print(warehouse)
 
-
-print("moved")
-
-
-
-
-print(warehouse)
+print("sequences")
+for sequence in solver.actionSequences:
+    print("new")
+    print(sequence)

@@ -379,6 +379,22 @@ class SokobanPuzzle(search.Problem):
     def __init__(self, warehouse):
 
         self.initial = warehouse.copy()
+        self.expanded_states = []
+        self.expanded_states.append(self.initial)
+        self.unexpanded_states = []
+        actions = self.actions(self.initial)
+        self.actionSequences = []
+
+
+        #expand initial nodes and add nodes to the unexpanded states list
+        for action in actions:
+            copy = self.initial.copy()
+            move_worker(copy,action)
+            self.unexpanded_states.append(copy)
+
+            sequence = []
+            sequence.append(action)
+            self.actionSequences.append(sequence)
 
         #raise NotImplementedError()
 
@@ -390,12 +406,8 @@ class SokobanPuzzle(search.Problem):
         
         """
 
-        #Defines the actions of the state as true at the beginning
-        up = True
-        left = True
-        right = True
-        down = True
 
+        actions = ["Up","Left","Right","Down"]
         #Defines the position of the worker
         worker = list(state.worker)
 
@@ -415,16 +427,16 @@ class SokobanPuzzle(search.Problem):
         #Checks the position next to the worker is a wall if the position is a wall that direction is false
         #Checks whether a box next to the worker can be pushed by checking the position next to the box is either a wall or a box
         if box_or_wall(worker_up,state)[1] or (box_or_wall(worker_up,state)[0] and (box_or_wall(worker_up2,state)[0] or box_or_wall(worker_up2,state)[1])):
-            up = False
+            actions.remove("Up")
         if box_or_wall(worker_left,state)[1] or (box_or_wall(worker_left,state)[0] and (box_or_wall(worker_left2,state)[0] or box_or_wall(worker_left2,state)[1])):
-            left = False
+            actions.remove("Left")
         if box_or_wall(worker_right,state)[1] or (box_or_wall(worker_right,state)[0] and (box_or_wall(worker_right2,state)[0] or box_or_wall(worker_right2,state)[1])):
-            right = False
+            actions.remove("Right")
         if box_or_wall(worker_down,state)[1] or (box_or_wall(worker_down,state)[0] and (box_or_wall(worker_down2,state)[0] or box_or_wall(worker_down2,state)[1])):
-            down = False
+            actions.remove("Down")
 
         #returns a boolean for each position in a list representing whether that direction is a valid input
-        return[up,down,left,right]
+        return actions
         raise NotImplementedError
     
 
@@ -535,33 +547,33 @@ def move_worker(state,action):
         #Moves Box along with worker if box is in the way
         if box_or_wall(worker_left,state)[0]:
             index = state.boxes.index((worker_left[0],worker_left[1]))
-            state.boxes[index] = worker_left2
+            state.boxes[index] = (worker_left2[0],worker_left2[1])
 
-        state.worker = worker_left
+        state.worker = (worker_left[0],worker_left[1])
 
     if action == "Right":
         #Moves Box along with worker if box is in the way
         if box_or_wall(worker_right,state)[0]:
             index = state.boxes.index((worker_right[0],worker_right[1]))
-            state.boxes[index] = worker_right2
+            state.boxes[index] = (worker_right2[0],worker_right2[1])
 
-        state.worker = worker_right
+        state.worker = (worker_right[0],worker_right[1])
 
     if action == "Up":
         #Moves Box along with worker if box is in the way
         if box_or_wall(worker_up,state)[0]:
             index = state.boxes.index((worker_up[0],worker_up[1]))
-            state.boxes[index] = worker_up2
+            state.boxes[index] = (worker_up2[0],worker_up2[1])
 
-        state.worker = worker_up
+        state.worker = (worker_up[0],worker_up[1])
     
     if action == "Down":
         #Moves Box along with worker if box is in the way
         if box_or_wall(worker_down,state)[0]:
             index = state.boxes.index((worker_down[0],worker_down[1]))
-            state.boxes[index] = worker_down2
+            state.boxes[index] = (worker_down2[0],worker_down2[1])
 
-        state.worker = worker_down
+        state.worker = (worker_down[0],worker_down[1])
         
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
