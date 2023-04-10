@@ -511,6 +511,10 @@ def solve_weighted_sokoban(warehouse):
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 def move_worker(state,action):
+    """
+    Moves worker and box in a certain direction        
+    """
+
     worker = list(state.worker)
 
     #Defines the positions next to the worker
@@ -525,39 +529,40 @@ def move_worker(state,action):
     worker_right2 = [worker[0] + 2,worker[1]]
     worker_down2 = [worker[0],worker[1] + 2]
 
+
+
     if action == "Left":
+        #Moves Box along with player if box is in the way
         if box_or_wall(worker_left,state)[0]:
             index = state.boxes.index((worker_left[0],worker_left[1]))
             state.boxes[index] = worker_left2
 
-
         state.worker = worker_left
 
     if action == "Right":
+        #Moves Box along with player if box is in the way
         if box_or_wall(worker_right,state)[0]:
             index = state.boxes.index((worker_right[0],worker_right[1]))
             state.boxes[index] = worker_right2
 
-
         state.worker = worker_right
 
     if action == "Up":
+        #Moves Box along with player if box is in the way
         if box_or_wall(worker_up,state)[0]:
             index = state.boxes.index((worker_up[0],worker_up[1]))
             state.boxes[index] = worker_up2
 
-
         state.worker = worker_up
     
     if action == "Down":
+        #Moves Box along with player if box is in the way
         if box_or_wall(worker_down,state)[0]:
             index = state.boxes.index((worker_down[0],worker_down[1]))
             state.boxes[index] = worker_down2
 
-
         state.worker = worker_down
         
-    return None
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
