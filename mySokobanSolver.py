@@ -378,23 +378,80 @@ class SokobanPuzzle(search.Problem):
     
     def __init__(self, warehouse):
 
-        self.initial = warehouse.copy()
+        self.initial = warehouse
         self.expanded_states = []
         self.expanded_states.append(self.initial)
         self.unexpanded_states = []
         actions = self.actions(self.initial)
-        self.actionSequences = []
+        self.unexpanded_actionSequences = []
+        self.unexpanded_weights = []
+        self.expanded_actionSequences = []
+        self.expanded_actionSequences.append([])
+        self.expanded_weights = []
+        self.expanded_weights.append(0)
+        self.goal = assign_boxes_to_targets(warehouse.boxes,warehouse.targets,warehouse.weights)
+
+        worker = warehouse.worker
+        #Defines the positions next to the worker
+        worker_up = [worker[0],worker[1] - 1]
+        worker_left = [worker[0] - 1,worker[1]]
+        worker_right = [worker[0] + 1,worker[1]]
+        worker_down = [worker[0],worker[1] + 1]
 
 
         #expand initial nodes and add nodes to the unexpanded states list
         for action in actions:
-            copy = self.initial.copy()
-            move_worker(copy,action)
-            self.unexpanded_states.append(copy)
+
+            if action == "Left":
+                try:
+                    index = self.initial.boxes.index((worker_left[0],worker_left[1]))
+                    weight = self.initial.weights[index] + 1
+                    self.unexpanded_weights.append(weight)
+                except:
+                    weight = 1
+                    self.unexpanded_weights.append(weight)
+            
+            if action == "Right":
+                try:
+                    index = self.initial.boxes.index((worker_right[0],worker_right[1]))
+                    weight = self.initial.weights[index] + 1
+                    self.unexpanded_weights.append(weight)
+                except:
+                    weight = 1
+                    self.unexpanded_weights.append(weight)
+            
+            if action == "Up":
+                try:
+                    index = self.initial.boxes.index((worker_up[0],worker_up[1]))
+                    weight = self.initial.weights[index] + 1
+                    self.unexpanded_weights.append(weight)
+                except:
+                    weight = 1
+                    self.unexpanded_weights.append(weight)
+
+            if action == "Down":
+                try:
+                    index = self.initial.boxes.index((worker_down[0],worker_down[1]))
+                    weight = self.initial.weights[index] + 1
+                    self.unexpanded_weights.append(weight)
+                except:
+                    weight = 1
+                    self.unexpanded_weights.append(weight)
+
+            warehouse_copy = deep_copy(self.initial)
+            move_worker(warehouse_copy,action)
+            self.unexpanded_states.append(warehouse_copy)
 
             sequence = []
             sequence.append(action)
-            self.actionSequences.append(sequence)
+            self.unexpanded_actionSequences.append(sequence)
+            
+            
+            
+
+
+
+
 
         #raise NotImplementedError()
 
@@ -517,16 +574,16 @@ def solve_weighted_sokoban(warehouse):
             C is the total cost of the action sequence C
 
     '''
-    
-    #raise NotImplementedError()
+    solver = SokobanPuzzle(warehouse)
 
+    #raise NotImplementedError()
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 def move_worker(state,action):
     """
     Moves worker and box in a certain direction        
     """
-
     worker = list(state.worker)
 
     #Defines the positions next to the worker
@@ -574,6 +631,7 @@ def move_worker(state,action):
             state.boxes[index] = (worker_down2[0],worker_down2[1])
 
         state.worker = (worker_down[0],worker_down[1])
+
         
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -592,3 +650,42 @@ def remove_duplicate_state(duplicate_1,duplicate_2):
     """
     return None
 
+
+def deep_copy(warehouse):
+
+        copy = sokoban.Warehouse()
+        copy.worker =  warehouse.worker
+        i = 0
+        copy.boxes = [None] * len(warehouse.boxes)
+        for box in warehouse.boxes:
+            copy.boxes[i] = box
+            i += 1
+        copy.weights = warehouse.weights
+        copy.targets = warehouse.targets
+        copy.walls = warehouse.walls
+        copy.ncols = warehouse.ncols
+        copy.nrows = warehouse.nrows
+        return copy
+
+def assign_boxes_to_targets(boxes, targets, weights):
+
+    sorted_boxes = sorted(boxes, key=lambda b: weights[boxes.index(b)],reverse=True)
+    copy_boxes = []
+    for box in boxes:
+        copy_boxes.append(box)
+
+    assigned_targets = [None] * len(targets)
+
+    for box in sorted_boxes:
+        closest_distance = float('inf')
+        closest_target = None
+        for target in targets:
+            if target not in assigned_targets:
+                distance = abs(box[0] - target[0]) + abs(box[1] - target[1])
+                if distance < closest_distance:
+                    closest_distance = distance
+                    closest_target = target
+        assigned_targets.append(closest_target)
+        copy_boxes[boxes.index(box)] = closest_target
+
+    return copy_boxes
