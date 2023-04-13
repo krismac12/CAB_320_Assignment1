@@ -2,28 +2,14 @@ import  mySokobanSolver
 import sokoban
 
 warehouse = sokoban.Warehouse()
-warehouse.load_warehouse("warehouses\warehouse_8b.txt")
+warehouse.load_warehouse("warehouses\warehouse_01_a.txt")
 
-mySokobanSolver.move_worker(warehouse,"Left")
+solver = mySokobanSolver.solve_weighted_sokoban(warehouse)
+print(solver.current)
+index = solver.expanded_states.index(solver.current)
+print(solver.expanded_actionSequences[index])
+
+#print(solver.unexpanded_actionSequences)
+#print(solver.hueristic)
 
 
-solved_boxes = mySokobanSolver.assign_boxes_to_targets(warehouse.boxes,warehouse.targets,warehouse.weights)
-
-
-
-print(warehouse)
-
-solver = mySokobanSolver.SokobanPuzzle(warehouse)
-
-mySokobanSolver.move_worker(warehouse,"Left")
-mySokobanSolver.move_worker(warehouse,"Up")
-mySokobanSolver.move_worker(warehouse,"Right")
-mySokobanSolver.move_worker(warehouse,"Right")
-
-print(warehouse)
-
-print(warehouse.boxes)
-print(solved_boxes)
-
-if solved_boxes == warehouse.boxes:
-    print("Solved")

@@ -390,6 +390,9 @@ class SokobanPuzzle(search.Problem):
         self.expanded_weights = []
         self.expanded_weights.append(0)
         self.goal = assign_boxes_to_targets(warehouse.boxes,warehouse.targets,warehouse.weights)
+        self.current = warehouse
+
+        self.hueristic = []
 
         worker = warehouse.worker
         #Defines the positions next to the worker
@@ -401,14 +404,13 @@ class SokobanPuzzle(search.Problem):
 
         #expand initial nodes and add nodes to the unexpanded states list
         for action in actions:
-
+            weight = 1
             if action == "Left":
                 try:
                     index = self.initial.boxes.index((worker_left[0],worker_left[1]))
                     weight = self.initial.weights[index] + 1
                     self.unexpanded_weights.append(weight)
                 except:
-                    weight = 1
                     self.unexpanded_weights.append(weight)
             
             if action == "Right":
@@ -417,7 +419,6 @@ class SokobanPuzzle(search.Problem):
                     weight = self.initial.weights[index] + 1
                     self.unexpanded_weights.append(weight)
                 except:
-                    weight = 1
                     self.unexpanded_weights.append(weight)
             
             if action == "Up":
@@ -426,7 +427,6 @@ class SokobanPuzzle(search.Problem):
                     weight = self.initial.weights[index] + 1
                     self.unexpanded_weights.append(weight)
                 except:
-                    weight = 1
                     self.unexpanded_weights.append(weight)
 
             if action == "Down":
@@ -435,7 +435,6 @@ class SokobanPuzzle(search.Problem):
                     weight = self.initial.weights[index] + 1
                     self.unexpanded_weights.append(weight)
                 except:
-                    weight = 1
                     self.unexpanded_weights.append(weight)
 
             warehouse_copy = deep_copy(self.initial)
@@ -445,6 +444,9 @@ class SokobanPuzzle(search.Problem):
             sequence = []
             sequence.append(action)
             self.unexpanded_actionSequences.append(sequence)
+
+            h = hueristic_distance(warehouse_copy.boxes,self.goal,self.initial.weights) + weight
+            self.hueristic.append(h)
             
             
             
@@ -575,6 +577,79 @@ def solve_weighted_sokoban(warehouse):
 
     '''
     solver = SokobanPuzzle(warehouse)
+    i = 0
+    while solver.current.boxes != solver.goal and solver.unexpanded_states and i < 1000:
+        min_h = min(solver.hueristic)
+        index = solver.hueristic.index(min_h)
+        solver.current = solver.unexpanded_states[index]
+
+        worker = solver.current.worker
+        #Defines the positions next to the worker
+        worker_up = [worker[0],worker[1] - 1]
+        worker_left = [worker[0] - 1,worker[1]]
+        worker_right = [worker[0] + 1,worker[1]]
+        worker_down = [worker[0],worker[1] + 1]
+
+        actions = solver.actions(solver.current)
+
+        #expand initial nodes and add nodes to the unexpanded states list
+        for action in actions:
+            weight = 1
+            if action == "Left":
+                try:
+                    box_index = solver.current.boxes.index((worker_left[0],worker_left[1]))
+                    weight = solver.current.weights[box_index] + 1 + solver.unexpanded_weights[index]
+                    solver.unexpanded_weights.append(weight)
+                except:
+                    solver.unexpanded_weights.append(weight)
+            
+            if action == "Right":
+                try:
+                    box_index = solver.current.boxes.index((worker_right[0],worker_right[1]))
+                    weight = solver.current.weights[box_index] + 1 + solver.unexpanded_weights[index]
+                    solver.unexpanded_weights.append(weight)
+                except:
+                    solver.unexpanded_weights.append(weight)
+            
+            if action == "Up":
+                try:
+                    box_index = solver.current.boxes.index((worker_up[0],worker_up[1]))
+                    weight = solver.current.weights[box_index] + 1 + solver.unexpanded_weights[index]
+                    solver.unexpanded_weights.append(weight)
+                except:
+                    solver.unexpanded_weights.append(weight)
+
+            if action == "Down":
+                try:
+                    box_index = solver.current.boxes.index((worker_down[0],worker_down[1]))
+                    weight = solver.current.weights[box_index] + 1 + solver.unexpanded_weights[index]
+                    solver.unexpanded_weights.append(weight)
+                except:
+                    solver.unexpanded_weights.append(weight)
+
+            warehouse_copy = deep_copy(solver.current)
+            move_worker(warehouse_copy,action)
+            solver.unexpanded_states.append(warehouse_copy)
+
+            sequence = []
+            for action_2 in solver.unexpanded_actionSequences[index]:
+                sequence.append(action_2)
+            sequence.append(action)
+            solver.unexpanded_actionSequences.append(sequence)
+
+            h = hueristic_distance(warehouse_copy.boxes,solver.goal,solver.initial.weights) + weight
+            solver.hueristic.append(h)
+
+        solver.expanded_states.append(solver.current)
+        solver.expanded_actionSequences.append(solver.unexpanded_actionSequences[index])
+        solver.expanded_weights.append(solver.unexpanded_weights[index])
+        del solver.hueristic[index]
+        del solver.unexpanded_states[index]
+        del solver.unexpanded_actionSequences[index]
+        del solver.unexpanded_weights[index]
+        i = i + 1
+
+    return solver
 
     #raise NotImplementedError()
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -632,11 +707,23 @@ def move_worker(state,action):
 
         state.worker = (worker_down[0],worker_down[1])
 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      
+def hueristic_distance(boxes,targets,weights):
+    """
+    Approximates the cost from to get from the current state to the target state
         
-
+    """
+    distance = 0
+    i = 0
+    for i in range(len(boxes)):
+        newdistance = (abs(boxes[i][0] - targets[i][0]) + abs(boxes[i][1] - targets[i][1])) * (weights[i] + 1)
+        distance = distance + newdistance  
+        
+    return distance
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-def remove_taboo_state(state):
+def remove_taboo_state(states):
     """
     Removes the states where a box is in a taboo_cell
         
