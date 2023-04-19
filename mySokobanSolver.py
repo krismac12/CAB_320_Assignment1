@@ -775,7 +775,23 @@ def remove_taboo_state(states):
     Removes the states where a box is in a taboo_cell
         
     """
-    return None
+    taboo = taboo_cells(warehouse)
+    is_not_taboo = True
+    
+    for x, taboo in enumerate(taboo):
+        for y, z in enumerate(taboo):
+            
+            if z == "X":
+                for box in states.boxes:
+                    if z == list(box):
+                        is_not_taboo = False
+                    
+                for target in states.targets:
+                    if  z== list(target):
+                        is_not_taboo = True
+                        
+                      
+    return is_not_taboo
 
 def remove_duplicate_state(duplicate_1,duplicate_2):
     """
