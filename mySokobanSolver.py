@@ -542,12 +542,31 @@ def check_elem_action_seq(warehouse, action_seq):
                 if (next_x, next_y - 1) not in warehouse.walls and (next_x, next_y) in warehouse.boxes:
                     warehouse.boxes.remove((next_x, next_y))
                     warehouse.boxes.append((next_x, next_y - 1))
-                    worker_y = next_y
+                    ###worker_y = next_y
+                    move_worker(worker_y, "Up")
+                else:
+                    return impossible_seq 
             else:
-                return impossible_seq 
-        else:
-            worker_y = next_y 
-    ###elif action == "Down":
+                ###worker_y = next_y
+                move_worker(worker_y, "Up") 
+        elif action == 'Down':
+            next_x = worker_x
+            next_y = worker_y + 1
+            if (next_x, next_y) in warehouse.walls:
+                return impossible_seq
+            elif (next_x, next_y) in warehouse.boxes: 
+                if (next_x, next_y + 1) not in warehouse.walls and (next_x, next_y) in warehouse.boxes:
+                    warehouse.boxes.remove((next_x, next_y))
+                    warehouse.boxes.append((next_x, next_y + 1))
+                    ###worker_y = next_y
+                    move_worker(worker_y, "Down")
+                else:
+                    return impossible_seq
+            else:
+                ###worker_y = next_y
+                move_worker(worker_y, "Down")
+        ###elif action == 'Left': 
+
 
 
 
