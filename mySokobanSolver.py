@@ -771,7 +771,6 @@ def hueristic_distance(boxes,targets,weights):
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 def remove_taboo_state(states):
-def Is_taboo_state(states):
     """
     Removes the states where a box is in a taboo_cell
         
