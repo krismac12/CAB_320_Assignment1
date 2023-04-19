@@ -543,12 +543,12 @@ def check_elem_action_seq(warehouse, action_seq):
                     warehouse.boxes.remove((next_x, next_y))
                     warehouse.boxes.append((next_x, next_y - 1))
                     ###worker_y = next_y
-                    move_worker(worker_y, "Up")
+                    move_worker(warehouse, "Up")
                 else:
                     return impossible_seq 
             else:
                 ###worker_y = next_y
-                move_worker(worker_y, "Up") 
+                move_worker(warehouse, "Up") 
         elif action == 'Down':
             next_x = worker_x
             next_y = worker_y + 1
@@ -559,13 +559,41 @@ def check_elem_action_seq(warehouse, action_seq):
                     warehouse.boxes.remove((next_x, next_y))
                     warehouse.boxes.append((next_x, next_y + 1))
                     ###worker_y = next_y
-                    move_worker(worker_y, "Down")
+                    move_worker(warehouse, "Down")
                 else:
                     return impossible_seq
             else:
                 ###worker_y = next_y
-                move_worker(worker_y, "Down")
-        ###elif action == 'Left': 
+                move_worker(warehouse, "Down")
+        elif action == 'Left':
+            next_x = worker_x - 1
+            next_y = worker_y
+            if(next_x, next_y) in warehouse.walls:
+                return impossible_seq
+            elif (next_x, next_y) in warehouse.boxes:
+                if(next_x - 1, next_y) not in warehouse.walls and (next_x, next_y) in warehouse.boxes:
+                    warehouse.boxes.remove((next_x, next_y))
+                    warehouse.boxes.append((next_x - 1, next_y))
+                    move_worker(warehouse, "Left")
+                else:
+                    return impossible_seq
+            else:
+                move_worker(warehouse, "Left")
+        elif action == 'Right':
+            next_x = worker_x + 1
+            next_y = worker_y
+            if(next_x, next_y) in warehouse.walls:
+                return impossible_seq
+            elif (next_x, next_y) in warehouse.boxes:
+                if(next_x + 1, next_y) not in warehouse.walls and (next_x, next_y) in warehouse.boxes:
+                    warehouse.boxes.remove((next_x, next_y))
+                    warehouse.boxes.append((next_x + 1, next_y))
+                    move_worker(warehouse, "Right")
+                else:
+                    return impossible_seq
+            else:
+                move_worker(warehouse, "Right")
+
 
 
 
