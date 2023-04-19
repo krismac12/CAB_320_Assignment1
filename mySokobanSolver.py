@@ -775,7 +775,7 @@ def remove_taboo_state(states):
     Removes the states where a box is in a taboo_cell
         
     """
-    taboo = taboo_cells(warehouse)
+    taboo = taboo_cells(states)
     is_not_taboo = True
     
     for x, taboo in enumerate(taboo):
