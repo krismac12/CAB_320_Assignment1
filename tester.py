@@ -2,13 +2,12 @@ import  mySokobanSolver
 import sokoban
 
 warehouse = sokoban.Warehouse()
-warehouse.load_warehouse("warehouses\warehouse_01_a.txt")
+path = "warehouses\warehouse_8a.txt"
+warehouse.load_warehouse(path)
 
 solver = mySokobanSolver.solve_weighted_sokoban(warehouse)
-print(solver.current)
-index = solver.expanded_states.index(solver.current)
-print(solver.expanded_actionSequences[index])
-
+print(solver.expanded_actionSequences[len(solver.expanded_actionSequences)-1])
+print(solver.expanded_states[len(solver.expanded_states)-1])
 #print(solver.unexpanded_actionSequences)
 #print(solver.hueristic)
 

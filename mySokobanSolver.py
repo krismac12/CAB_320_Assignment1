@@ -771,6 +771,7 @@ def hueristic_distance(boxes,targets,weights):
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 def remove_taboo_state(states):
+def Is_taboo_state(states):
     """
     Removes the states where a box is in a taboo_cell
         
@@ -793,7 +794,7 @@ def remove_taboo_state(states):
                       
     return is_not_taboo
 
-def remove_duplicate_state(duplicate_1,duplicate_2):
+def Is_duplicate_state(list,warehouse):
     """
     Compares multiple states with the same layout and removes the state that has a longer path
         
