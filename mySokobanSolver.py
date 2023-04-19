@@ -594,7 +594,7 @@ def check_elem_action_seq(warehouse, action_seq):
             else:
                 move_worker(warehouse, "Right")
 
-
+    return warehouse.__str__()
 
 
 
