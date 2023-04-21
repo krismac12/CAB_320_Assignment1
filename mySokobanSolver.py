@@ -798,7 +798,15 @@ def Is_duplicate_state(list,warehouse):
     Compares multiple states with the same layout and removes the state that has a longer path
         
     """
-    return None
+
+    is_duplicate = False
+
+    for q in list:
+        if q == warehouse and len(q.path) > len(warehouse.path):
+            list.remove(q)
+            is_duplicate = True
+
+    return is_duplicate
 
 
 def deep_copy(warehouse):
