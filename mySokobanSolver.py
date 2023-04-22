@@ -78,16 +78,23 @@ def taboo_cells(warehouse):
     wall_cell = '#'
     taboo_cell = 'X'
     
+    
     cells = str(warehouse)
     for char in cell_to_remove:
         cells = cells.replace(char, ' ')
     cells = cells.split('\n')
+    cells = list(zip(*cells))  
+
+    
     #List to store cell for rule 1
     
     x_1 = 0
     for x in cells:
         cells[x_1] = list(x)
+        
         x_1 +=1
+    
+    
 
     def corner_cell(warehouse, x, y, wall=0):
         """
@@ -114,6 +121,8 @@ def taboo_cells(warehouse):
     for y in range(len(cells) - 1):
         inside_cell = False
         for x in range(len(cells[0]) - 1):
+            if cells[y][x] == '$':
+                print(y,x)
             # iretate through row in warehouse until wthe first wall is discovered
             if not inside_cell:
                 if cells[y][x] == wall_cell:
@@ -124,6 +133,7 @@ def taboo_cells(warehouse):
                 if all([char == ' ' for char in cells[y][x:]]):
                     break
                 if cells[y][x] not in target_cell:
+                    
                     if cells[y][x] != wall_cell:
                         if corner_cell(cells, x, y):
                             cells[y][x] = taboo_cell
@@ -161,6 +171,12 @@ def taboo_cells(warehouse):
     cells_copy = ""
     cells = cells[:]
     
+    cells = list(zip(*cells))  
+
+    
+    #List to store cell for rule 1
+    
+    
     counter = 0
     for row in cells:
         cells_copy += ''.join(row)
@@ -175,7 +191,7 @@ def taboo_cells(warehouse):
     # remove the remaining target_squares
     for char in target_cell:
         cells_copy = cells_copy.replace(char, ' ')
-    
+    print(taboo_location)
     return cells_copy
     #raise NotImplementedError()
 #--------------------------------------------------------------------------------------------------------------------------   
