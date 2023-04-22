@@ -247,6 +247,8 @@ class SokobanPuzzle(search.Problem):
         worker_right = [worker[0] + 1,worker[1]]
         worker_down = [worker[0],worker[1] + 1]
 
+        taboo_cells(warehouse)
+
 
         #expand initial nodes and add nodes to the unexpanded states list
         for action in actions:
@@ -471,10 +473,19 @@ def solve_weighted_sokoban(warehouse):
     '''
     solver = SokobanPuzzle(warehouse)
     i = 0
-    while solver.current.boxes != solver.goal and solver.unexpanded_states and i < 1000:
+    while set(solver.current.boxes) != set(solver.goal) and solver.unexpanded_states:
         min_h = min(solver.hueristic)
         index = solver.hueristic.index(min_h)
-        solver.current = solver.unexpanded_states[index]
+        if(not Is_duplicate_state(solver.expanded_states,solver.unexpanded_states[index])):
+            solver.current = solver.unexpanded_states[index]
+        
+        else:
+            del solver.unexpanded_states[index]
+            del solver.unexpanded_actionSequences[index]
+            del solver.unexpanded_weights[index]
+            del solver.hueristic[index]
+            i = i +1
+            continue
 
         worker = solver.current.worker
         #Defines the positions next to the worker
@@ -487,13 +498,13 @@ def solve_weighted_sokoban(warehouse):
 
         #expand initial nodes and add nodes to the unexpanded states list
         for action in actions:
-            weight = 1
             if action == "Left":
                 try:
                     box_index = solver.current.boxes.index((worker_left[0],worker_left[1]))
                     weight = solver.current.weights[box_index] + 1 + solver.unexpanded_weights[index]
                     solver.unexpanded_weights.append(weight)
                 except:
+                    weight = 1 + solver.unexpanded_weights[index] 
                     solver.unexpanded_weights.append(weight)
             
             if action == "Right":
@@ -502,14 +513,16 @@ def solve_weighted_sokoban(warehouse):
                     weight = solver.current.weights[box_index] + 1 + solver.unexpanded_weights[index]
                     solver.unexpanded_weights.append(weight)
                 except:
+                    weight = 1 + solver.unexpanded_weights[index] 
                     solver.unexpanded_weights.append(weight)
-            
+
             if action == "Up":
                 try:
                     box_index = solver.current.boxes.index((worker_up[0],worker_up[1]))
                     weight = solver.current.weights[box_index] + 1 + solver.unexpanded_weights[index]
                     solver.unexpanded_weights.append(weight)
                 except:
+                    weight = 1 + solver.unexpanded_weights[index] 
                     solver.unexpanded_weights.append(weight)
 
             if action == "Down":
@@ -518,6 +531,7 @@ def solve_weighted_sokoban(warehouse):
                     weight = solver.current.weights[box_index] + 1 + solver.unexpanded_weights[index]
                     solver.unexpanded_weights.append(weight)
                 except:
+                    weight = 1 + solver.unexpanded_weights[index] 
                     solver.unexpanded_weights.append(weight)
 
             warehouse_copy = deep_copy(solver.current)
@@ -542,7 +556,10 @@ def solve_weighted_sokoban(warehouse):
         del solver.unexpanded_weights[index]
         i = i + 1
 
-    return solver
+    if(set(solver.current.boxes) != set(solver.goal)):
+        return "Impossible"
+    else:
+        return [solver.expanded_actionSequences[len(solver.expanded_actionSequences)-1],solver.expanded_weights[len(solver.expanded_weights)-1],solver.current]
 
     #raise NotImplementedError()
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -622,20 +639,14 @@ def remove_taboo_state(states):
         
     """
     is_not_taboo = True
-    
     for tup in taboo_location:
         for box in states.boxes:
-            if tup == list(box):
+            if tup == box and box not in states.targets:
                 is_not_taboo = False
-                    
-        for target in states.targets:
-            if  tup == list(target):
-                is_not_taboo = True
-                        
-                      
+                                      
     return is_not_taboo
 
-def Is_duplicate_state(list,warehouse):
+def Is_duplicate_state(expanded,warehouse):
     """
     Compares multiple states with the same layout and removes the state that has a longer path
         
@@ -643,11 +654,11 @@ def Is_duplicate_state(list,warehouse):
 
     is_duplicate = False
 
-    for q in list:
-        if q == warehouse and len(q.path) > len(warehouse.path):
-            list.remove(q)
-            is_duplicate = True
-
+    for state in expanded:
+        if state.boxes == warehouse.boxes:
+            if state.worker == warehouse.worker:
+                is_duplicate = True
+                
     return is_duplicate
 
 

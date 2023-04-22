@@ -2,13 +2,27 @@ import  mySokobanSolver
 import sokoban
 
 warehouse = sokoban.Warehouse()
-path = "warehouses\warehouse_8a.txt"
+path = "warehouses\warehouse_13.txt"
 warehouse.load_warehouse(path)
 
 solver = mySokobanSolver.solve_weighted_sokoban(warehouse)
-print(solver.expanded_actionSequences[len(solver.expanded_actionSequences)-1])
-print(solver.expanded_states[len(solver.expanded_states)-1])
+
+#solver = mySokobanSolver
+#solver.taboo_cells(warehouse)
+#print(mySokobanSolver.remove_taboo_state(warehouse))
+
+#mySokobanSolver.taboo_cells(warehouse)
+#print(mySokobanSolver.remove_taboo_state(warehouse))
 #print(solver.unexpanded_actionSequences)
 #print(solver.hueristic)
+#print(mySokobanSolver.taboo_cells(warehouse))
+#print(solver.initial)
+#print(solver.initial)
+
+
+print(solver)
+print(solver[2])
+
+
 
 
