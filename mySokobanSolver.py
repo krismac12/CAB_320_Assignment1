@@ -191,7 +191,6 @@ def taboo_cells(warehouse):
     # remove the remaining target_squares
     for char in target_cell:
         cells_copy = cells_copy.replace(char, ' ')
-    print(taboo_location)
     return cells_copy
     #raise NotImplementedError()
 #--------------------------------------------------------------------------------------------------------------------------   
@@ -492,7 +491,7 @@ def solve_weighted_sokoban(warehouse):
     while set(solver.current.boxes) != set(solver.goal) and solver.unexpanded_states:
         min_h = min(solver.hueristic)
         index = solver.hueristic.index(min_h)
-        if(not Is_duplicate_state(solver.expanded_states,solver.unexpanded_states[index])):
+        if(not Is_duplicate_state(solver.expanded_states,solver.unexpanded_states[index]) and remove_taboo_state(solver.unexpanded_states[index])):
             solver.current = solver.unexpanded_states[index]
         
         else:
@@ -575,7 +574,7 @@ def solve_weighted_sokoban(warehouse):
     if(set(solver.current.boxes) != set(solver.goal)):
         return "Impossible"
     else:
-        return [solver.expanded_actionSequences[len(solver.expanded_actionSequences)-1],solver.expanded_weights[len(solver.expanded_weights)-1],solver.current]
+        return [solver.expanded_actionSequences[len(solver.expanded_actionSequences)-1],solver.expanded_weights[len(solver.expanded_weights)-1]]
 
     #raise NotImplementedError()
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

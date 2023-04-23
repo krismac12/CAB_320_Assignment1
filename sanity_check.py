@@ -68,7 +68,7 @@ def test_check_elem_action_seq():
 
 def test_solve_weighted_sokoban():
     wh = Warehouse()    
-    wh.load_warehouse( "./warehouses/warehouse_8a.txt")
+    wh.load_warehouse( "warehouses\warehouse_09.txt")
     # first test
     answer, cost = solve_weighted_sokoban(wh)
 
