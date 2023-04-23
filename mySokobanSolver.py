@@ -248,20 +248,25 @@ class SokobanPuzzle(search.Problem):
     
     def __init__(self, warehouse):
 
+        # represents the initial state of the warehouse
         self.initial = warehouse
-        self.expanded_states = []
-        self.expanded_states.append(self.initial)
+        # represents the states that have not been expanded
         self.unexpanded_states = []
-        actions = self.actions(self.initial)
         self.unexpanded_actionSequences = []
         self.unexpanded_weights = []
+        # represents the states that have been expanded
         self.expanded_actionSequences = []
         self.expanded_actionSequences.append([])
         self.expanded_weights = []
         self.expanded_weights.append(0)
+        self.expanded_states = []
+        self.expanded_states.append(self.initial)
         self.goal = warehouse.targets
+        # represents the current state being expanded
         self.current = warehouse
+        actions = self.actions(self.initial)
 
+        # represents the heuristic values of the unexpanded states
         self.hueristic = []
 
         worker = warehouse.worker
@@ -309,14 +314,18 @@ class SokobanPuzzle(search.Problem):
                 except:
                     self.unexpanded_weights.append(weight)
 
+
+            # Creates a copy of the warehouse and then moves the worker and adds that to the unexpanded states list
             warehouse_copy = deep_copy(self.initial)
             move_worker(warehouse_copy,action)
             self.unexpanded_states.append(warehouse_copy)
 
+            # adds the initial sequence as blank
             sequence = []
             sequence.append(action)
             self.unexpanded_actionSequences.append(sequence)
 
+            # adds the initial heuristic value
             h = hueristic_distance(warehouse_copy.boxes,self.goal,self.initial.weights) + weight
             self.hueristic.append(h)
             
@@ -496,19 +505,20 @@ def solve_weighted_sokoban(warehouse):
 
     '''
     solver = SokobanPuzzle(warehouse)
-    i = 0
     while set(solver.current.boxes) != set(solver.goal) and solver.unexpanded_states:
+        # Find lowest heuristic value
         min_h = min(solver.hueristic)
         index = solver.hueristic.index(min_h)
+        # Checks if that state is either a duplicate state or a state that has a box in a taboo state
         if(not Is_duplicate_state(solver.expanded_states,solver.unexpanded_states[index]) and remove_taboo_state(solver.unexpanded_states[index])):
             solver.current = solver.unexpanded_states[index]
         
+        # removes that state from the unexpanded list
         else:
             del solver.unexpanded_states[index]
             del solver.unexpanded_actionSequences[index]
             del solver.unexpanded_weights[index]
             del solver.hueristic[index]
-            i = i +1
             continue
 
         worker = solver.current.worker
@@ -523,69 +533,85 @@ def solve_weighted_sokoban(warehouse):
         #expand initial nodes and add nodes to the unexpanded states list
         for action in actions:
             if action == "Left":
+                # tries to index the box if position is box then sets weight
                 try:
                     box_index = solver.current.boxes.index((worker_left[0],worker_left[1]))
                     weight = solver.current.weights[box_index] + 1 + solver.unexpanded_weights[index]
                     solver.unexpanded_weights.append(weight)
+
+                # sets weight when the position does not have a box
                 except:
                     weight = 1 + solver.unexpanded_weights[index] 
                     solver.unexpanded_weights.append(weight)
             
             if action == "Right":
+                # tries to index the box if position is box then sets weight
                 try:
                     box_index = solver.current.boxes.index((worker_right[0],worker_right[1]))
                     weight = solver.current.weights[box_index] + 1 + solver.unexpanded_weights[index]
                     solver.unexpanded_weights.append(weight)
+
+                # sets weight when the position does not have a box
                 except:
                     weight = 1 + solver.unexpanded_weights[index] 
                     solver.unexpanded_weights.append(weight)
 
             if action == "Up":
+                # tries to index the box if position is box then sets weight
                 try:
                     box_index = solver.current.boxes.index((worker_up[0],worker_up[1]))
                     weight = solver.current.weights[box_index] + 1 + solver.unexpanded_weights[index]
                     solver.unexpanded_weights.append(weight)
+                
+                # sets weight when the position does not have a box
                 except:
                     weight = 1 + solver.unexpanded_weights[index] 
                     solver.unexpanded_weights.append(weight)
 
             if action == "Down":
+                # tries to index the box if position is box then sets weight
                 try:
                     box_index = solver.current.boxes.index((worker_down[0],worker_down[1]))
                     weight = solver.current.weights[box_index] + 1 + solver.unexpanded_weights[index]
                     solver.unexpanded_weights.append(weight)
+                
+                # sets weight when the position does not have a box
                 except:
                     weight = 1 + solver.unexpanded_weights[index] 
                     solver.unexpanded_weights.append(weight)
 
+            # Creates a copy of the warehouse and then moves the worker and adds that to the unexpanded states list
             warehouse_copy = deep_copy(solver.current)
             move_worker(warehouse_copy,action)
             solver.unexpanded_states.append(warehouse_copy)
 
             sequence = []
+
+            # Adds the sequence of actions of the state
             for action_2 in solver.unexpanded_actionSequences[index]:
                 sequence.append(action_2)
             sequence.append(action)
             solver.unexpanded_actionSequences.append(sequence)
 
+            # Finds the heuristic value of the state and adds it to the list
             h = hueristic_distance(warehouse_copy.boxes,solver.goal,solver.initial.weights) + weight
             solver.hueristic.append(h)
 
+        # Adds current state to expanded states
         solver.expanded_states.append(solver.current)
         solver.expanded_actionSequences.append(solver.unexpanded_actionSequences[index])
         solver.expanded_weights.append(solver.unexpanded_weights[index])
+        # deletes current state from unexpanded list
         del solver.hueristic[index]
         del solver.unexpanded_states[index]
         del solver.unexpanded_actionSequences[index]
         del solver.unexpanded_weights[index]
-        i = i + 1
 
     if(set(solver.current.boxes) != set(solver.goal)):
         return "Impossible"
     else:
         return [solver.expanded_actionSequences[len(solver.expanded_actionSequences)-1],solver.expanded_weights[len(solver.expanded_weights)-1]]
 
-    #raise NotImplementedError()
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -665,6 +691,8 @@ def hueristic_distance(boxes,targets,weights):
     The cost is calculated as the sum of the Manhattan distances between the current location and target location of each box, multiplied by the weight of the box plus one. 
     The returned value is an estimate and may not represent the actual cost required to move the boxes to their target location.        
     """
+
+    # represents the smallest distance between each box
     distance = 0
     i = 0
     for i in range(len(boxes)):
@@ -727,6 +755,8 @@ def deep_copy(warehouse):
     The copy is created by copying all attributes of the given warehouse object to a new instance of the Warehouse class. 
     The returned object is an independent copy and any changes made to it will not affect the original object.
     """
+
+    # initialize copy as empty warehouse
     copy = sokoban.Warehouse()
     copy.worker =  warehouse.worker
     i = 0
