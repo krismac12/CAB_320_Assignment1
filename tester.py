@@ -22,6 +22,5 @@ solver = mySokobanSolver.solve_weighted_sokoban(warehouse)
 
 print(solver)
 
-print(solver[2])
 
 

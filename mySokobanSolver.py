@@ -198,6 +198,15 @@ def taboo_cells(warehouse):
 def box_or_wall(position,state):
     """
     Returns a tuple that contains wether the position is a box or a wall
+
+    @param
+    position: a tuple representing the position on the grid
+    state: a State object representing the current state of the warehouse
+
+    @return
+    Returns a tuple of two Boolean values. The first value is True if the given position is a box, False otherwise.
+    The second value is True if the given position is a wall, False otherwise.
+    
     """
     is_box = False
     is_wall = False
@@ -250,7 +259,7 @@ class SokobanPuzzle(search.Problem):
         self.expanded_actionSequences.append([])
         self.expanded_weights = []
         self.expanded_weights.append(0)
-        self.goal = assign_boxes_to_targets(warehouse.boxes,warehouse.targets,warehouse.weights)
+        self.goal = warehouse.targets
         self.current = warehouse
 
         self.hueristic = []
@@ -582,7 +591,14 @@ def solve_weighted_sokoban(warehouse):
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 def move_worker(state,action):
     """
-    Moves worker and box in a certain direction        
+    Moves worker and box in a certain direction.
+    
+    @param 
+        state: a valid State object representing the current state
+        action: a string representing the action to take
+        
+    @return
+        None
     """
     worker = list(state.worker)
 
@@ -636,8 +652,18 @@ def move_worker(state,action):
       
 def hueristic_distance(boxes,targets,weights):
     """
-    Approximates the cost from to get from the current state to the target state
-        
+    This function calculates an approximate cost of the movement required to move boxes from their current location to their target location in a warehouse. It returns a numerical value representing the estimated cost.
+
+    @param
+    boxes: a list of tuples containing the current location of each box
+    targets: a list of tuples containing the target location of each box
+    weights: a list of numerical values representing the weights of each box
+
+    @return
+    Returns a numerical value representing the estimated cost of moving the boxes 
+    from their current location to their target location. 
+    The cost is calculated as the sum of the Manhattan distances between the current location and target location of each box, multiplied by the weight of the box plus one. 
+    The returned value is an estimate and may not represent the actual cost required to move the boxes to their target location.        
     """
     distance = 0
     i = 0
@@ -648,23 +674,35 @@ def hueristic_distance(boxes,targets,weights):
     return distance
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-def remove_taboo_state(states):
+def remove_taboo_state(state):
     """
-    Removes the states where a box is in a taboo_cell
-        
+    Check whether a given state has any boxes in taboo cells
+
+    @param
+    state: a warehouse object
+
+    @return
+    Returns a boolean value indicating whether the state has any boxes in taboo cells
     """
     is_not_taboo = True
     for tup in taboo_location:
-        for box in states.boxes:
-            if tup == box and box not in states.targets:
+        for box in state.boxes:
+            if tup == box and box not in state.targets:
                 is_not_taboo = False
                                       
     return is_not_taboo
 
 def Is_duplicate_state(expanded,warehouse):
     """
-    Compares multiple states with the same layout and removes the state that has a longer path
-        
+    This function takes in a list of expanded states and a warehouse object and checks if the current state of the warehouse is a duplicate in the list of expanded states. It returns a boolean value indicating whether the current state is a duplicate or not.
+
+    @param
+    expanded: a list of valid State objects representing the states that have already been expanded
+    warehouse: a valid Warehouse object representing the current state
+
+    @return
+    Returns a boolean value indicating whether the current state is a duplicate in the 
+    list of expanded states. If the current state is a duplicate, returns True. Otherwise, returns False.
     """
 
     is_duplicate = False
@@ -678,40 +716,27 @@ def Is_duplicate_state(expanded,warehouse):
 
 
 def deep_copy(warehouse):
+    """
+    This function creates a deep copy of a given Warehouse object. It returns the deep copy of the given warehouse object.
 
-        copy = sokoban.Warehouse()
-        copy.worker =  warehouse.worker
-        i = 0
-        copy.boxes = [None] * len(warehouse.boxes)
-        for box in warehouse.boxes:
-            copy.boxes[i] = box
-            i += 1
-        copy.weights = warehouse.weights
-        copy.targets = warehouse.targets
-        copy.walls = warehouse.walls
-        copy.ncols = warehouse.ncols
-        copy.nrows = warehouse.nrows
-        return copy
+    @param
+    warehouse: a valid Warehouse object
 
-def assign_boxes_to_targets(boxes, targets, weights):
-
-    sorted_boxes = sorted(boxes, key=lambda b: weights[boxes.index(b)],reverse=True)
-    copy_boxes = []
-    for box in boxes:
-        copy_boxes.append(box)
-
-    assigned_targets = [None] * len(targets)
-
-    for box in sorted_boxes:
-        closest_distance = float('inf')
-        closest_target = None
-        for target in targets:
-            if target not in assigned_targets:
-                distance = abs(box[0] - target[0]) + abs(box[1] - target[1])
-                if distance < closest_distance:
-                    closest_distance = distance
-                    closest_target = target
-        assigned_targets.append(closest_target)
-        copy_boxes[boxes.index(box)] = closest_target
-
-    return copy_boxes
+    @return
+    Returns a deep copy of the given warehouse object. 
+    The copy is created by copying all attributes of the given warehouse object to a new instance of the Warehouse class. 
+    The returned object is an independent copy and any changes made to it will not affect the original object.
+    """
+    copy = sokoban.Warehouse()
+    copy.worker =  warehouse.worker
+    i = 0
+    copy.boxes = [None] * len(warehouse.boxes)
+    for box in warehouse.boxes:
+        copy.boxes[i] = box
+        i += 1
+    copy.weights = warehouse.weights
+    copy.targets = warehouse.targets
+    copy.walls = warehouse.walls
+    copy.ncols = warehouse.ncols
+    copy.nrows = warehouse.nrows
+    return copy
