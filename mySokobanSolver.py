@@ -46,6 +46,7 @@ def my_team():
     #raise NotImplementedError()
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# stores list of x,y values for taboo locations in warehouse
 taboo_location=[]
 
 def taboo_cells(warehouse):
@@ -156,7 +157,7 @@ def taboo_cells(warehouse):
                                 cells[y][x4] = 'X'
                                 taboo_location.append((y, x4))
                 # fill in taboo_cells in column going down from where taboo is 
-                # cell
+               
                 for y2 in range(len(col)):
                     if col[y2] in target_cell or col[y2] == wall_cell:
                         break
@@ -173,8 +174,6 @@ def taboo_cells(warehouse):
     
     cells = list(zip(*cells))  
 
-    
-    #List to store cell for rule 1
     
     
     counter = 0
