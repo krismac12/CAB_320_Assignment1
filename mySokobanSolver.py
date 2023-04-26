@@ -99,7 +99,16 @@ def taboo_cells(warehouse):
 
     def corner_cell(warehouse, x, y, wall=0):
         """
-        check whether cell has one wall above or below it and if wall is left or right of it
+    Check whether cell has one wall above or below it and if wall is left or right of it
+    Returns 
+    @param
+    warehouse: a warehouse object representing the current state of the warehouse
+    x: x position of wall in warehouse
+    y: y position of wall in warehouse
+    wall: to decide what should be returned
+    @return
+    Returns boolean of walls above and below, left and right, or both.
+        
         """
         up_down = 0
         left_right = 0
@@ -123,7 +132,7 @@ def taboo_cells(warehouse):
         inside_cell = False
         for x in range(len(cells[0]) - 1):
             if cells[y][x] == '$':
-                print(y,x)
+                
             # iretate through row in warehouse until wthe first wall is discovered
             if not inside_cell:
                 if cells[y][x] == wall_cell:
