@@ -42,7 +42,7 @@ def my_team():
     of triplet of the form (student_number, first_name, last_name)
     
     '''
-#    return [ (1234567, 'Ada', 'Lovelace'), (1234568, 'Grace', 'Hopper'), (1234569, 'Eva', 'Tardos') ]
+    return [ (11000490, 'Saad', 'Hasan'), (11049006, 'Kristan', 'Macaraeg'), (1234569, 'Ebenezer', '') ]
     #raise NotImplementedError()
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -616,6 +616,7 @@ def solve_weighted_sokoban(warehouse):
 
     '''
     solver = SokobanPuzzle(warehouse)
+    i = 0
     while set(solver.current.boxes) != set(solver.goal) and solver.unexpanded_states:
         # Find lowest heuristic value
         min_h = min(solver.hueristic)
@@ -717,11 +718,12 @@ def solve_weighted_sokoban(warehouse):
         del solver.unexpanded_states[index]
         del solver.unexpanded_actionSequences[index]
         del solver.unexpanded_weights[index]
+        i = i + 1
 
     if(set(solver.current.boxes) == set(solver.goal)):
-        return [[solver.expanded_actionSequences[len(solver.expanded_actionSequences)-1]],solver.expanded_weights[len(solver.expanded_weights)-1]]
+        return [[solver.expanded_actionSequences[len(solver.expanded_actionSequences)-1]],solver.expanded_weights[len(solver.expanded_weights)-1], i]
     else:
-        return "Impossible",None
+        return "Impossible",None, i
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
