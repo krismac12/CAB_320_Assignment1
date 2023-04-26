@@ -615,10 +615,10 @@ def solve_weighted_sokoban(warehouse):
         del solver.unexpanded_actionSequences[index]
         del solver.unexpanded_weights[index]
 
-    if(set(solver.current.boxes) != set(solver.goal)):
-        return "Impossible"
+    if(set(solver.current.boxes) == set(solver.goal)):
+        return [[solver.expanded_actionSequences[len(solver.expanded_actionSequences)-1]],solver.expanded_weights[len(solver.expanded_weights)-1]]
     else:
-        return [solver.expanded_actionSequences[len(solver.expanded_actionSequences)-1],solver.expanded_weights[len(solver.expanded_weights)-1]]
+        return "Impossible",None
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 

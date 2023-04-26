@@ -2,10 +2,10 @@ import  mySokobanSolver
 import sokoban
 
 warehouse = sokoban.Warehouse()
-path = "warehouses\warehouse_15.txt"
+path = "warehouses\warehouse_03.txt"
 warehouse.load_warehouse(path)
 
-solver = mySokobanSolver.solve_weighted_sokoban(warehouse)
+print(mySokobanSolver.solve_weighted_sokoban(warehouse))
 
 #solver = mySokobanSolver
 #solver.taboo_cells(warehouse)
@@ -19,8 +19,6 @@ solver = mySokobanSolver.solve_weighted_sokoban(warehouse)
 #print(solver.initial)
 #print(solver.initial)
 
-
-print(solver)
 
 
 
