@@ -132,7 +132,7 @@ def taboo_cells(warehouse):
         inside_cell = False
         for x in range(len(cells[0]) - 1):
             if cells[y][x] == '$':
-                
+                print(y,x)
             # iretate through row in warehouse until wthe first wall is discovered
             if not inside_cell:
                 if cells[y][x] == wall_cell:

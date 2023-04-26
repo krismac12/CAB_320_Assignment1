@@ -2,7 +2,7 @@ import  mySokobanSolver
 import sokoban
 
 warehouse = sokoban.Warehouse()
-path = "warehouses\warehouse_47.txt"
+path = "warehouses\warehouse_15.txt"
 warehouse.load_warehouse(path)
 
 solver = mySokobanSolver.solve_weighted_sokoban(warehouse)
