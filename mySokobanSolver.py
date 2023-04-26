@@ -523,9 +523,9 @@ def check_elem_action_seq(warehouse, action_seq):
 
     worker_x, worker_y = warehouse.worker
 
+    #check if each move in the action sequence is valid 
     for action in action_seq:
         if action == 'Up':
-            ###print('up')
             #next move after up
             next_x = worker_x
             next_y = worker_y - 1
@@ -533,14 +533,14 @@ def check_elem_action_seq(warehouse, action_seq):
                 return impossible_seq
             elif (next_x, next_y) in warehouse.boxes:
                 if (next_x, next_y - 1) not in warehouse.walls and (next_x, next_y) in warehouse.boxes:
+                    #the move is possible
                     warehouse.boxes.remove((next_x, next_y))
                     warehouse.boxes.append((next_x, next_y - 1))
-                    ###worker_y = next_y
                     move_worker(warehouse, "Up")
                 else:
+                    #if move is impossible
                     return impossible_seq 
             else:
-                ###worker_y = next_y
                 move_worker(warehouse, "Up") 
         elif action == 'Down':
             next_x = worker_x
@@ -551,12 +551,10 @@ def check_elem_action_seq(warehouse, action_seq):
                 if (next_x, next_y + 1) not in warehouse.walls and (next_x, next_y) in warehouse.boxes:
                     warehouse.boxes.remove((next_x, next_y))
                     warehouse.boxes.append((next_x, next_y + 1))
-                    ###worker_y = next_y
                     move_worker(warehouse, "Down")
                 else:
                     return impossible_seq
             else:
-                ###worker_y = next_y
                 move_worker(warehouse, "Down")
         elif action == 'Left':
             next_x = worker_x - 1
@@ -587,6 +585,7 @@ def check_elem_action_seq(warehouse, action_seq):
             else:
                 move_worker(warehouse, "Right")
 
+    #return a string representing the state of the puzzle
     return warehouse.__str__()
 
 
