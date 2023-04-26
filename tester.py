@@ -1,9 +1,8 @@
 import  mySokobanSolver
-import sokoban
+from sokoban import Warehouse
 
-warehouse = sokoban.Warehouse()
-path = "warehouses\warehouse_03.txt"
-warehouse.load_warehouse(path)
+warehouse = Warehouse()
+warehouse.load_warehouse("warehouses\warehouse_03.txt")
 
 print(mySokobanSolver.solve_weighted_sokoban(warehouse))
 

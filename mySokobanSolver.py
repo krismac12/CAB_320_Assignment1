@@ -201,6 +201,111 @@ def taboo_cells(warehouse):
         cells_copy = cells_copy.replace(char, ' ')
     return cells_copy
     #raise NotImplementedError()
+
+def find_taboo(warehouse):
+    cell_to_remove = ['$', '@']
+    target_cell = ['.', '!', '*']
+    wall_cell = '#'
+    taboo_cell = 'X'
+    taboo_locations = []
+    
+    cells = str(warehouse)
+    for char in cell_to_remove:
+        cells = cells.replace(char, ' ')
+    cells = cells.split('\n')
+    cells = list(zip(*cells))  
+
+    
+    #List to store cell for rule 1
+    
+    x_1 = 0
+    for x in cells:
+        cells[x_1] = list(x)
+        
+        x_1 +=1
+    
+    
+
+    def corner_cell(warehouse, x, y, wall=0):
+        """
+    Check whether cell has one wall above or below it and if wall is left or right of it
+    Returns 
+    @param
+    warehouse: a warehouse object representing the current state of the warehouse
+    x: x position of wall in warehouse
+    y: y position of wall in warehouse
+    wall: to decide what should be returned
+    @return
+    Returns boolean of walls above and below, left and right, or both.
+        
+        """
+        up_down = 0
+        left_right = 0
+        # check for walls above and below
+        for (dx, dy) in [(0, 1), (0, -1)]:
+            if warehouse[y + dy][x + dx] == wall_cell:
+                up_down += 1
+        # check for walls left and right
+        for (dx, dy) in [(1, 0), (-1, 0)]:
+            if warehouse[y + dy][x + dx] == wall_cell:
+                left_right += 1
+        if wall:
+            return (up_down >= 1) or (left_right >= 1)
+        else:
+            return (up_down >= 1) and (left_right >= 1)
+   
+
+    
+    # rule 1
+    for y in range(len(cells) - 1):
+        inside_cell = False
+        for x in range(len(cells[0]) - 1):
+            if cells[y][x] == '$':
+                print(y,x)
+            # iretate through row in warehouse until wthe first wall is discovered
+            if not inside_cell:
+                if cells[y][x] == wall_cell:
+                    inside_cell = True
+            else:
+                #see if all the walls to to the right of current is empty
+                
+                if all([char == ' ' for char in cells[y][x:]]):
+                    break
+                if cells[y][x] not in target_cell:
+                    
+                    if cells[y][x] != wall_cell:
+                        if corner_cell(cells, x, y):
+                            cells[y][x] = taboo_cell
+                            taboo_locations.append((y, x))
+
+    # apply rule 2
+    for y in range(1, len(cells) - 1):
+        for x in range(1, len(cells[0]) - 1):
+            if cells[y][x] == taboo_cell and corner_cell(cells, x, y):
+                row = cells[y][x + 1:]
+                col = [row[x] for row in cells[y + 1:][:]]
+                # fill in taboo_cells in row to the right of cell where taboo is 
+                for x2 in range(len(row)):
+                    if row[x2] in target_cell or row[x2] == wall_cell:
+                        break
+                    if row[x2] == taboo_cell and corner_cell(cells, x2 + x + 1, y):
+                        if all([corner_cell(cells, x3, y, 1)
+                                for x3 in range(x + 1, x2 + x + 1)]):
+                            for x4 in range(x + 1, x2 + x + 1):
+                                cells[y][x4] = 'X'
+                                taboo_locations.append((y, x4))
+                # fill in taboo_cells in column going down from where taboo is 
+               
+                for y2 in range(len(col)):
+                    if col[y2] in target_cell or col[y2] == wall_cell:
+                        break
+                    if col[y2] == taboo_cell and corner_cell(cells, x, y2 + y + 1):
+                        if all([corner_cell(cells, x, y3, 1)
+                                for y3 in range(y + 1, y2 + y + 1)]):
+                            for y4 in range(y + 1, y2 + y + 1):
+                                cells[y4][x] = 'X'
+                                taboo_locations.append((y4, x))
+    return taboo_locations
 #--------------------------------------------------------------------------------------------------------------------------   
  
 def box_or_wall(position,state):
@@ -284,8 +389,7 @@ class SokobanPuzzle(search.Problem):
         worker_right = [worker[0] + 1,worker[1]]
         worker_down = [worker[0],worker[1] + 1]
 
-        taboo_cells(warehouse)
-
+        self.taboo = find_taboo(warehouse)
 
         #expand initial nodes and add nodes to the unexpanded states list
         for action in actions:
@@ -518,7 +622,7 @@ def solve_weighted_sokoban(warehouse):
         min_h = min(solver.hueristic)
         index = solver.hueristic.index(min_h)
         # Checks if that state is either a duplicate state or a state that has a box in a taboo state
-        if(not Is_duplicate_state(solver.expanded_states,solver.unexpanded_states[index]) and remove_taboo_state(solver.unexpanded_states[index])):
+        if(not Is_duplicate_state(solver.expanded_states,solver.unexpanded_states[index]) and remove_taboo_state(solver.unexpanded_states[index],solver.taboo)):
             solver.current = solver.unexpanded_states[index]
         
         # removes that state from the unexpanded list
@@ -710,7 +814,7 @@ def hueristic_distance(boxes,targets,weights):
     return distance
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-def remove_taboo_state(state):
+def remove_taboo_state(state,taboo):
     """
     Check whether a given state has any boxes in taboo cells
 
@@ -721,7 +825,7 @@ def remove_taboo_state(state):
     Returns a boolean value indicating whether the state has any boxes in taboo cells
     """
     is_not_taboo = True
-    for tup in taboo_location:
+    for tup in taboo:
         for box in state.boxes:
             if tup == box and box not in state.targets:
                 is_not_taboo = False
