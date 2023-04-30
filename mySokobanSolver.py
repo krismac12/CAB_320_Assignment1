@@ -42,7 +42,7 @@ def my_team():
     of triplet of the form (student_number, first_name, last_name)
     
     '''
-    return [ (11000490, 'Saad', 'Hasan'), (11049006, 'Kristan', 'Macaraeg'), (1234569, 'Ebenezer', '') ]
+    return [ (11000490, 'Saad', 'Hasan'), (11049006, 'Kristan', 'Macaraeg'), (11504862, 'Ebenezer', 'Antwi-Brefo') ]
     #raise NotImplementedError()
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -203,6 +203,13 @@ def taboo_cells(warehouse):
     #raise NotImplementedError()
 
 def find_taboo(warehouse):
+    """
+        @param warehouse: 
+        a Warehouse object with the worker inside the warehouse
+
+        @return
+        Tuples representing the taboo locations of the warehouse
+    """
     cell_to_remove = ['$', '@']
     target_cell = ['.', '!', '*']
     wall_cell = '#'
@@ -718,12 +725,11 @@ def solve_weighted_sokoban(warehouse):
         del solver.unexpanded_states[index]
         del solver.unexpanded_actionSequences[index]
         del solver.unexpanded_weights[index]
-        i = i + 1
 
     if(set(solver.current.boxes) == set(solver.goal)):
-        return [[solver.expanded_actionSequences[len(solver.expanded_actionSequences)-1]],solver.expanded_weights[len(solver.expanded_weights)-1], i]
+        return [[solver.expanded_actionSequences[len(solver.expanded_actionSequences)-1]],solver.expanded_weights[len(solver.expanded_weights)-1]]
     else:
-        return "Impossible",None, i
+        return "Impossible",None
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
