@@ -623,7 +623,6 @@ def solve_weighted_sokoban(warehouse):
 
     '''
     solver = SokobanPuzzle(warehouse)
-    i = 0
     while set(solver.current.boxes) != set(solver.goal) and solver.unexpanded_states:
         # Find lowest heuristic value
         min_h = min(solver.hueristic)
